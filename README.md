@@ -1,28 +1,37 @@
 # 🎲 Dice Roll Probability Calculator
 
-A command-line Python tool for calculating the probability of outcomes when rolling standard six-sided dice. Whether you're analyzing tabletop game odds, studying probability theory, or just curious about your chances at the gaming table, this tool gives you precise answers fast.
+A command-line tool for calculating probabilities of dice roll outcomes using combinatorics and binomial distribution.
 
 ---
+## Youtube video of Project 
 
+link : https://youtu.be/rrUFaeUkHLY
+
+---
 ## Features
 
-- **Sum Probability** — Find the probability of rolling a specific total in one throw, and the cumulative probability of hitting that total at least once across multiple throws.
-- **At Least k Successes** — Calculate the probability of achieving a target sum on at least *k* throws out of a given number of attempts.
-- **At Most k Successes** — Calculate the probability of achieving a target sum on no more than *k* throws out of a given number of attempts.
-- **Export All Sums to CSV** — Generate a full distribution table of all possible sums and their probabilities, saved as a CSV file for further analysis.
+- Calculate the probability of a specific sum from rolling multiple dice
+- Find the probability of achieving **at least k successes** across multiple throws
+- Find the probability of achieving **at most k successes** across multiple throws
+- Export a full sum probability distribution to a **CSV file**
 
 ---
 
 ## Requirements
 
-- Python 3.7 or higher
-- No external dependencies — uses only the Python standard library (`csv`, `math`)
+- Python 3.x (no external libraries required — uses only `csv` and `math` from the standard library)
 
 ---
 
 ## Usage
 
-Run the script and you will be greeted by an interactive menu:
+Run the script from your terminal:
+
+```bash
+python main.py
+```
+
+You will see the main menu:
 
 ```
 --Welcome to Dice Roll Probability Calculator
@@ -34,56 +43,110 @@ Run the script and you will be greeted by an interactive menu:
 0. Exit
 ```
 
-### Option 1 — Sum Probability
+---
 
-Enter the number of dice, the number of throws, and your target sum. The calculator returns:
-- The probability of rolling that exact sum on a single throw
-- The probability of rolling that sum **at least once** across all throws
+## Menu Options
+
+### 1. Sum Probability
+
+Calculates the probability that a given number of dice rolled simultaneously will produce a specific sum.
 
 **Example:**
-> 2 dice, 5 throws, target sum of 7 → ~16.67% per throw, ~58.56% at least once
+```
+Enter number of dice thrown at once: 2
+Enter target sum (2 to 12): 7
+Probability: 6/36 or 16.6667%
+```
 
 ---
 
-### Option 2 — At Least k Successes
+### 2. At Least k Successes
 
-Define a "success" as rolling a sum greater than or equal to a threshold. Enter the number of dice, number of throws, threshold value, and minimum number of successes required. The calculator uses the binomial distribution to return the probability of hitting at least *k* successes.
+Uses the **binomial distribution** to calculate the probability of getting a target sum **at least k times** over multiple throws.
+
+**Inputs:**
+- Number of dice per throw
+- Number of throws
+- Target sum (defines what counts as a "success")
+- Minimum number of successes (k)
 
 **Example:**
-> 2 dice, 10 throws, threshold ≥ 10, at least 3 successes → exact probability shown
+```
+Enter number of dice: 2
+Enter number of throws: 10
+Enter success value (sum = ?, range 2-12): 7
+Enter minimum number of successes: 3
+Probability of at least 3 success(es): 55.0934%
+```
 
 ---
 
-### Option 3 — At Most k Successes
+### 3. At Most k Successes
 
-Same as above, but returns the probability of achieving **at most** *k* successes — useful for calculating the chance of a low-roll streak or conservative outcomes.
+Calculates the probability of getting the target sum **at most k times** over multiple throws.
+
+**Inputs:** Same as option 2, but asks for a **maximum** number of successes.
+
+**Example:**
+```
+Enter number of dice: 2
+Enter number of throws: 10
+Enter success value (sum = ?, range 2-12): 7
+Enter maximum number of successes: 2
+Probability of at most 2 success(es): 44.9066%
+```
 
 ---
 
-### Option 4 — Export All Sums to CSV
+### 4. Export All Sums to CSV
 
-Provide the number of dice and throws, then optionally name your output file (defaults to `sums.csv`). The exported file includes three columns:
+Generates a CSV file containing every possible sum for a given number of dice, along with the total sample space size and probability percentage.
 
-| Sum | Total Outcomes | Probability (%) |
-|-----|----------------|-----------------|
-| 2   | 36             | 2.7778          |
-| 7   | 36             | 16.6667         |
-| 12  | 36             | 2.7778          |
+**Example output (`sums.csv`):**
+
+| Sum | Sample Space | Probability (%) |
+|-----|-------------|-----------------|
+| 2   | 36          | 2.7778          |
+| 3   | 36          | 5.5556          |
+| 7   | 36          | 16.6667         |
+| 12  | 36          | 2.7778          |
 
 ---
 
 ## How It Works
 
-The calculator builds an exact probability distribution for all possible sums by iteratively convolving the outcomes of each die. For multi-throw calculations, it applies the **binomial probability formula** to model independent repeated trials — giving you accurate results without relying on simulation or approximation.
+### Sum Distribution (`get_sum_distribution`)
+
+Iteratively convolves dice face values to build a frequency map of all possible sums. For `n` dice with 6 sides, the total sample space is `6ⁿ`.
+
+### Binomial Probability
+
+Options 2 and 3 use the **binomial formula**:
+
+```
+P(X = k) = C(n, k) * p^k * (1-p)^(n-k)
+```
+
+Where:
+- `n` = number of throws
+- `k` = number of successes
+- `p` = probability of the target sum on a single throw
 
 ---
 
-## Configuration
+## Project Structure
 
-By default, the calculator uses standard **6-sided dice**. To change to a different die type, update the constant at the top of the script:
-
-```python
-SIDES = 6  # Change to 4, 8, 10, 12, or 20 for other die types
+```
+.
+root/
+    ├── project.py       # Main script with all logic
+    ├── test_project.py  # Testing of the main script
 ```
 
 ---
+
+## Notes
+
+- The calculator assumes **standard fair 6-sided dice**.
+- The number of dice and throw counts can be any positive integer, but very large values may slow down the distribution calculation.
+- CSV files are saved in the current working directory unless a full path is specified.
